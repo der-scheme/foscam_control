@@ -230,29 +230,6 @@
           this.dom_object.src = this.camera.connection.stream_url();
         }
         
-        start_stream(freq = this.update_fps) {
-          this.stop_stream();
-          var self = this;
-          this.interval_id = setInterval(this.update.bind(this), 1000 / freq);
-          console.log('Stream ' + this.interval_id + ' start, fps: ' + freq);
-        }
-        stop_stream() {
-          if (typeof this.interval_id !== 'undefined' && this.interval_id) {
-            console.log('Stop stream ' + this.interval_id);
-            window.clearInterval(this.interval_id);
-            this.interval_id = null;
-          }
-        }
-        toggle_stream_handler(e) {
-          e.preventDefault();
-          
-          if (typeof this.interval_id !== 'undefined' && this.interval_id) {
-            this.stop_stream();
-          }
-          else {
-            this.start_stream();
-          }
-        }
         paint(image_url) {
           this.image_url = image_url;
           this.repaint();
@@ -261,6 +238,13 @@
           this.dom_object.src=this.image_url;
         }
         update() {this.paint(this.camera.connection.snap_url());}
+        
+        snapshot_handler(e) {
+          e.target.href = this.camera.connection.snap_url(false); // TODO: fix proxy, then omit false
+        }
+        update_snapshot_release(target) {
+          
+        }
       }
     </script>
   </head>
@@ -273,21 +257,23 @@
           <input type="password" name="password" placeholder="password" />
           <input type="submit" value="Connect" />
         </form>
-        <div class="camera_stream" tabindex="100">
+        <a href="" class="camera_stream" tabindex="100" target="_blank" rel="noopener">
           <img class="stream_media" />
-        </div>
+        </a>
       </article>
     </main>
     <script>
       (function () {
           function init_stream(url, user, password) {
+            var stream = document.querySelector('.camera_stream');
+            var canvas = stream.querySelector('.stream_media');
+            
             var connection = new CameraConnection(url, user, password);
             var camera = new Camera(connection);
             var controller = new CameraController(camera);
-            var canvas = document.querySelector('.stream_media');
             var display = new Display(camera, canvas);
             display.init();
-            var stream = document.querySelector('.camera_stream');
+            stream.addEventListener('focus', display.snapshot_handler.bind(display));
             //stream.addEventListener('click', display.toggle_stream_handler.bind(display));
             stream.addEventListener('keydown', controller.key_event_handler.bind(controller));
             stream.addEventListener('keyup', controller.key_event_handler.bind(controller));
