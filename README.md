@@ -25,3 +25,6 @@ The index.html will theoretically also work without a proxy, but only if accesse
 ## Known Issues
 * For streaming, the script will not go through a proxy, but will rather connect to the camera directly.
 * Currently, only keyboard control is supported. There are no immediate plans for the addition of other control methods.
+
+# Disclaimer
+This is an independent project. We are not affiliated with Foscam in any way.
